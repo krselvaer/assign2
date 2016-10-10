@@ -1,6 +1,7 @@
 package no.uis.dat630;
 
 import java.io.File;
+import java.util.Random;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -52,11 +53,17 @@ public class Main {
 			
 			// train J48 and output model
 			NaiveBayes nbc = new NaiveBayes();
-			nbc.buildClassifier(dataFiltered);
+			//nbc.buildClassifier(dataFiltered);
 			
-			 Evaluation eval = new Evaluation(dataFiltered);
-			 eval.evaluateModel(nbc, testDataFiltered);
-			 System.out.println(eval.toSummaryString("\nResults\n======\n", false));
+			Evaluation eval = new Evaluation(dataFiltered);
+			Random rand = new Random(1);  // using seed = 1
+			int folds = 5;
+			eval.crossValidateModel(nbc, dataFiltered, folds, rand);
+			System.out.println(eval.toSummaryString());
+			
+//			Evaluation eval = new Evaluation(dataFiltered);
+//			eval.evaluateModel(nbc, testDataFiltered);
+//			System.out.println(eval.toSummaryString("\nResults\n======\n", false));
 			
 //			Classifier svm = new LibSVM();
 //			svm.buildClassifier(dataFiltered);
