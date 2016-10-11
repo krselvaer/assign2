@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
@@ -13,13 +14,16 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Whitelist;
 
 import weka.core.Attribute;
+import weka.core.FastVector;
 import weka.core.Instance;
+import weka.core.Instances;
 
 public class Parser {
 	
@@ -95,6 +99,7 @@ public class Parser {
 				temp = cleanTagPerservingLineBreaks(temp);
 				temp = removeUrl(temp);
 				temp = removeExtendedChars(temp);
+				temp = TokenizerC.tokenize(temp);
 				PrintWriter writer = new PrintWriter(rootDir+ "Txt\\" + files[j].getPath(), "UTF-8");
 				writer.println(temp);
 				writer.close();
@@ -110,10 +115,41 @@ public class Parser {
 			temp = cleanTagPerservingLineBreaks(temp);
 			temp = removeUrl(temp);
 			temp = removeExtendedChars(temp);
+			temp = TokenizerC.tokenize(temp);
 			PrintWriter writer = new PrintWriter(rootDir+ "Txt\\" + files[i].getPath(), "UTF-8");
 			writer.println(temp);
 			writer.close();
 		}
+	}
+	
+	public static Instances loadTestData (String path) throws IOException {
+		File rootPath = new File(path);
+		File[] files = rootPath.listFiles();
+		
+		
+		FastVector fvNominalVal = new FastVector(4);
+		fvNominalVal.addElement("course");
+		fvNominalVal.addElement("faculty");
+		fvNominalVal.addElement("project");
+		fvNominalVal.addElement("student");
+		
+		Attribute attribute1 = new Attribute("class", fvNominalVal);
+		Attribute attribute2 = new Attribute("text",(FastVector) null);
+		
+		FastVector fvWekaAttributes = new FastVector(2);
+		fvWekaAttributes.addElement(attribute1);
+		fvWekaAttributes.addElement(attribute2);
+		
+		Instances testData = new Instances("Test relation", fvWekaAttributes, 1);
+		testData.setClassIndex(0);
+		for(int i=0; i<files.length; i++) {
+			String temp = readFile(files[i].getPath(),StandardCharsets.UTF_8);
+			Instance instance = new Instance(2);
+			instance.setValue(attribute2, temp);
+			testData.add(instance);
+		}
+		
+		return testData;
 	}
 	
 	public static String readFile(String path, Charset encoding) 
@@ -149,4 +185,18 @@ public class Parser {
 	    return str.replaceAll("[^\\x00-\\x7F]", " ");
 	}
 	
+	public static void comparableData(ArrayList<String> predictions, String outPath) {
+		try {
+			FileWriter writer = new FileWriter(outPath);
+			writer.write("Id,Class");
+			writer.write(System.lineSeparator());
+			for (String result : predictions) {
+				writer.write(result);
+				writer.write(System.lineSeparator());
+			}
+			writer.close();
+		} catch (Exception e) {
+			System.out.println("File error");
+		}
+	}
 }

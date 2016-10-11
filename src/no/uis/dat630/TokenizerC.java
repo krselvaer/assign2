@@ -2,10 +2,10 @@ package no.uis.dat630;
 
 public class TokenizerC {
 
-	public void tokenize (String text) {
-		String withoutHtml = removeHtmlTags(text);
-		String temp = withoutHtml.replaceAll("\\s", " ");
-		temp.replaceAll("[^a-zA-Z0-9 ]+", "");
+	public static String tokenize (String text) {
+		String temp = text.replaceAll("\\s", " ");
+		temp = temp.replaceAll("[^a-zA-Z0-9 ]+", "").toLowerCase();
+		return temp;
 		
 	}
 	
