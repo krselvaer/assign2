@@ -21,8 +21,8 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
-		Parser.wrapperClassForHtmlCleaning("train");
-		Parser.testWrapperClassForHtmlCleaning("test");
+//		Parser.wrapperClassForHtmlCleaning("train");
+//		Parser.testWrapperClassForHtmlCleaning("test");
 
 		// convert the directory into a dataset
 		TextDirectoryLoader loader = new TextDirectoryLoader();
@@ -41,23 +41,25 @@ public class Main {
 		trainDataFiltered.setClassIndex(0);
 
 		Instances testSet = Parser.loadTestData("testTxt//test");
-
-		 NaiveBayes nbc = new NaiveBayes();
-		 nbc.buildClassifier(trainDataFiltered);
+		filter.setInputFormat(testSet);
+		Instances testSetFiltered = Filter.useFilter(testSet, filter);
+		
+		NaiveBayes nbc = new NaiveBayes();
+		nbc.buildClassifier(trainDataFiltered);
 		
 //		LibSVM svm = new LibSVM();
 //		svm.buildClassifier(trainDataFiltered);
 
 		System.out.println ("Built!");
 		
-		Evaluation eval = new Evaluation(trainDataFiltered);
-		Random rand = new Random(1); // using seed = 1
-		int folds = 5;
-		eval.crossValidateModel(nbc, trainDataFiltered, folds, rand);
-		System.out.println(eval.toSummaryString());
+//		Evaluation eval = new Evaluation(trainDataFiltered);
+//		Random rand = new Random(1); // using seed = 1
+//		int folds = 5;
+//		eval.crossValidateModel(nbc, trainDataFiltered, folds, rand);
+//		System.out.println(eval.toSummaryString());
 		
-		//predict(testSet, nbc);
-		blabla(testSet, nbc);
+		predict(testSetFiltered, nbc);
+		//blabla(testSetFiltered, nbc);
 		System.out.println("Done!");
 	}
 

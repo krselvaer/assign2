@@ -137,11 +137,11 @@ public class Parser {
 		Attribute attribute2 = new Attribute("text",(FastVector) null);
 		
 		FastVector fvWekaAttributes = new FastVector(2);
-		fvWekaAttributes.addElement(attribute1);
 		fvWekaAttributes.addElement(attribute2);
+		fvWekaAttributes.addElement(attribute1);
 		
 		Instances testData = new Instances("Test relation", fvWekaAttributes, 1);
-		testData.setClassIndex(0);
+		testData.setClassIndex(1);
 		for(int i=0; i<files.length; i++) {
 			String temp = readFile(files[i].getPath(),StandardCharsets.UTF_8);
 			Instance instance = new Instance(2);
